@@ -1,0 +1,38 @@
+﻿<Window x:Class="blood_clot_warner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:blood_clot_warner"
+        mc:Ignorable="d"
+        Title="Blood Clot Warner" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Alert me after not getting up after this long:" FontSize="18" Margin="32,26,384,155" Grid.ColumnSpan="2"/>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hours:" FontSize="15" Margin="32,61,289,135"/>
+        <ComboBox x:Name="HoursComboBox" Grid.Row="0" Grid.Column="0" Margin="32,95,273,95">
+            <ComboBoxItem Content="1"></ComboBoxItem>
+            <ComboBoxItem Content="2"></ComboBoxItem>
+            <ComboBoxItem Content="3"></ComboBoxItem>
+            <ComboBoxItem Content="4"></ComboBoxItem>
+        </ComboBox>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Minutes:" FontSize="15" Margin="162,61,176,135"/>
+        <ComboBox x:Name="MinutesComboBox" Grid.Row="0" Grid.Column="0" Margin="162,95,143,95"/>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Seconds:" FontSize="15" Margin="284,61,45,135"></TextBlock>
+        <ComboBox x:Name="SecondsComboBox" Grid.Row="0" Grid.Column="0" Margin="283,95,20,96"/>
+
+        <Button Grid.Row="0" Grid.Column="0" Content="Save" FontSize="15" Click="OnSaveButtonClicked" Margin="146,156,160,26"></Button> 
+    </Grid>
+</Window>
