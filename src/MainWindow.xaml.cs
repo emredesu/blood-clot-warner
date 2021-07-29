@@ -25,25 +25,41 @@ namespace blood_clot_warner
             InitializeComponent();
 
             // add minutes 1-60 to minutes ComboBox 
-            for(int i = 1; i < 60; i++)
+            for(int i = 0; i < 60; i++)
             {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Content = i.ToString();
+                if (i == 0)
+                    item.IsSelected = true;
 
                 MinutesComboBox.Items.Add(item);
             }
 
             // add seconds 1-60 to seconds ComboBox
-            for (int i = 1; i < 60; i++)
+            for (int i = 0; i < 60; i++)
             {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Content = i.ToString();
+                if (i == 0)
+                    item.IsSelected = true;
 
                 SecondsComboBox.Items.Add(item);
             }
         }
 
-        public void OnSaveButtonClicked(object sender, RoutedEventArgs args) 
+        public void OnSaveButtonClicked(object sender, RoutedEventArgs args)
+        {
+            MessageBox.Show("todo :D");
+        }
+        
+        // todo: change the text on this button with a question mark image
+        public void OnHelpButtonClicked(object sender, RoutedEventArgs args)
+        {
+            MessageBox.Show("todo :D");
+        }
+
+        // todo: change the text on this button with a github logo image
+        public void OnGithubButtonClicked(object sender, RoutedEventArgs args)
         {
             MessageBox.Show("todo :D");
         }
