@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,6 +20,9 @@ namespace blood_clot_warner
     /// </summary>
     public partial class MainWindow : Window
     {
+        DateTime target_time;
+        Timer timer;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,7 +52,31 @@ namespace blood_clot_warner
 
         public void OnSaveButtonClicked(object sender, RoutedEventArgs args)
         {
-            MessageBox.Show("todo :D");
+            try
+            {
+                int hours = int.Parse(((ComboBoxItem)HoursComboBox.SelectedItem).Content.ToString());
+                int minutes = int.Parse(((ComboBoxItem)MinutesComboBox.SelectedItem).Content.ToString());
+                int seconds = int.Parse(((ComboBoxItem)SecondsComboBox.SelectedItem).Content.ToString());
+
+                if (hours == 4 && (minutes != 0 || seconds != 0))
+                {
+                    MessageBox.Show("The wait time can't be longer than 4 hours!");
+                    return;
+                }
+
+                target_time = DateTime.Now;
+                target_time = target_time.AddHours(hours);
+                target_time = target_time.AddMinutes(minutes);
+                target_time = target_time.AddSeconds(seconds);
+
+                TimeSpan timespan_until_then = target_time - DateTime.Now;
+                SetTimer(timespan_until_then);
+                MessageBox.Show($"Done! You will be alerted at {target_time.ToLongTimeString()}");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Something went horribly wrong.");
+            }
         }
         
         // todo: change the text on this button with a question mark image
@@ -63,5 +90,18 @@ namespace blood_clot_warner
         {
             MessageBox.Show("todo :D");
         }
+
+        private void SetTimer(TimeSpan alert_time)
+        {
+            Timer timer = new Timer(lambda =>
+            {
+                ShowGetUpNotification(); // Call this function at the end of the passed time span.
+            }, null, alert_time, Timeout.InfiniteTimeSpan);
+        }
+
+        private void ShowGetUpNotification()
+        {
+            MessageBox.Show("Time's up! Get up and do some stretching before returning to your chair.");
+        } 
     }
 }
