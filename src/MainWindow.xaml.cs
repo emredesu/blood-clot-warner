@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace blood_clot_warner
 {
@@ -23,6 +27,10 @@ namespace blood_clot_warner
         DateTime target_time;
         Timer timer;
 
+        int wait_time_hours;
+        int wait_time_minutes;
+        int wait_time_seconds;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,8 +40,6 @@ namespace blood_clot_warner
             {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Content = i.ToString();
-                if (i == 0)
-                    item.IsSelected = true;
 
                 MinutesComboBox.Items.Add(item);
             }
@@ -43,34 +49,109 @@ namespace blood_clot_warner
             {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Content = i.ToString();
-                if (i == 0)
-                    item.IsSelected = true;
 
                 SecondsComboBox.Items.Add(item);
             }
+
+            try
+            {
+                dynamic json_obj = JsonConvert.DeserializeObject(File.ReadAllText("config.json"));
+                wait_time_hours = json_obj["wait_time_hours"];
+                wait_time_minutes = json_obj["wait_time_minutes"];
+                wait_time_seconds = json_obj["wait_time_seconds"];
+
+                UpdateComboBoxValuesToJsonValues();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                RecreateJsonWithDefaultValues();
+            }
+        }
+
+        void RecreateJsonWithDefaultValues()
+        {
+            JObject new_json = new JObject();
+
+            new_json["wait_time_hours"] = 2;
+            new_json["wait_time_minutes"] = 0;
+            new_json["wait_time_seconds"] = 0;
+
+            using (StreamWriter file = File.CreateText("config.json"))
+            {
+                file.Write(new_json.ToString());
+            }
+        }
+
+        void RecreateJsonWithExistingValues()
+        {
+            JObject new_json = new JObject();
+
+            new_json["wait_time_hours"] = wait_time_hours;
+            new_json["wait_time_minutes"] = wait_time_minutes;
+            new_json["wait_time_seconds"] = wait_time_seconds;
+
+            using (StreamWriter file = File.CreateText("config.json"))
+            {
+                file.Write(new_json.ToString());
+            }
+        }
+
+        void UpdateComboBoxValuesToJsonValues()
+        {
+            if (wait_time_hours == 4 && (wait_time_minutes != 0 || wait_time_seconds != 0))
+            {
+                MessageBox.Show("Wait time can't be longer than 4 hours! Recreating the JSON file with default values.");
+                RecreateJsonWithDefaultValues();
+
+                wait_time_hours = 2;
+                wait_time_minutes = 0;
+                wait_time_seconds = 0;
+                UpdateComboBoxValuesToJsonValues();
+            }
+            else
+            {
+                HoursComboBox.SelectedValue = wait_time_hours;
+                MinutesComboBox.SelectedValue = wait_time_minutes;
+                SecondsComboBox.SelectedValue = wait_time_seconds;
+            }
+        }
+
+        public TimeSpan GetTimeSpanForTimer()
+        {
+            target_time = DateTime.Now;
+            target_time = target_time.AddHours(wait_time_hours);
+            target_time = target_time.AddMinutes(wait_time_minutes);
+            target_time = target_time.AddSeconds(wait_time_seconds);
+
+            TimeSpan timespan_until_then = target_time - DateTime.Now;
+            return timespan_until_then;
         }
 
         public void OnSaveButtonClicked(object sender, RoutedEventArgs args)
         {
             try
             {
-                int hours = int.Parse(((ComboBoxItem)HoursComboBox.SelectedItem).Content.ToString());
-                int minutes = int.Parse(((ComboBoxItem)MinutesComboBox.SelectedItem).Content.ToString());
-                int seconds = int.Parse(((ComboBoxItem)SecondsComboBox.SelectedItem).Content.ToString());
+                int hours_passed = int.Parse(((ComboBoxItem)HoursComboBox.SelectedItem).Content.ToString());
+                int minutes_passed = int.Parse(((ComboBoxItem)MinutesComboBox.SelectedItem).Content.ToString());
+                int seconds_passed = int.Parse(((ComboBoxItem)SecondsComboBox.SelectedItem).Content.ToString());
 
-                if (hours == 4 && (minutes != 0 || seconds != 0))
+                if (hours_passed == 4 && (minutes_passed != 0 || seconds_passed != 0))
                 {
                     MessageBox.Show("The wait time can't be longer than 4 hours!");
+
+                    // Return combobox values to previously existing values
+                    HoursComboBox.SelectedValue = wait_time_hours;
+                    MinutesComboBox.SelectedValue = wait_time_minutes;
+                    SecondsComboBox.SelectedValue = wait_time_seconds;
                     return;
                 }
 
-                target_time = DateTime.Now;
-                target_time = target_time.AddHours(hours);
-                target_time = target_time.AddMinutes(minutes);
-                target_time = target_time.AddSeconds(seconds);
+                wait_time_hours = hours_passed;
+                wait_time_minutes = minutes_passed;
+                wait_time_seconds = seconds_passed;
 
-                TimeSpan timespan_until_then = target_time - DateTime.Now;
-                SetTimer(timespan_until_then);
+                RecreateJsonWithExistingValues();
+                StartTimer(GetTimeSpanForTimer());
                 MessageBox.Show($"Done! You will be alerted at {target_time.ToLongTimeString()}");
             }
             catch (Exception e)
@@ -91,9 +172,9 @@ namespace blood_clot_warner
             MessageBox.Show("todo :D");
         }
 
-        private void SetTimer(TimeSpan alert_time)
+        private void StartTimer(TimeSpan alert_time)
         {
-            Timer timer = new Timer(lambda =>
+            timer = new Timer(lambda =>
             {
                 ShowGetUpNotification(); // Call this function at the end of the passed time span.
             }, null, alert_time, Timeout.InfiniteTimeSpan);
