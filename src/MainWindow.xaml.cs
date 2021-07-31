@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Timers;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace blood_clot_warner
 {
@@ -24,12 +27,16 @@ namespace blood_clot_warner
     /// </summary>
     public partial class MainWindow : Window
     {
-        DateTime target_time;
-        Timer timer;
+        // set up window minimization behaviour
+        
 
-        int wait_time_hours;
-        int wait_time_minutes;
-        int wait_time_seconds;
+        DateTime target_time;
+        System.Timers.Timer timer = new System.Timers.Timer();
+
+        // Default values
+        int wait_time_hours = 2;
+        int wait_time_minutes = 0;
+        int wait_time_seconds = 0;
 
         public MainWindow()
         {
@@ -53,6 +60,11 @@ namespace blood_clot_warner
                 SecondsComboBox.Items.Add(item);
             }
 
+            // set up timer args
+            timer.Elapsed += ShowGetUpNotification;
+            timer.AutoReset = false;
+            timer.Enabled = false;
+
             try
             {
                 dynamic json_obj = JsonConvert.DeserializeObject(File.ReadAllText("config.json"));
@@ -62,10 +74,13 @@ namespace blood_clot_warner
 
                 UpdateComboBoxValuesToJsonValues();
             }
-            catch (DirectoryNotFoundException)
+            catch (FileNotFoundException)
             {
                 RecreateJsonWithDefaultValues();
+                UpdateComboBoxValuesToJsonValues();
             }
+
+            StartTimer(GetTimeSpanForTimer());
         }
 
         void RecreateJsonWithDefaultValues()
@@ -108,6 +123,18 @@ namespace blood_clot_warner
                 wait_time_seconds = 0;
                 UpdateComboBoxValuesToJsonValues();
             }
+            /* TODO - enable this check on release
+            else if (wait_time_hours == 0 && wait_time_minutes < 30)
+            {
+                MessageBox.Show("Wait time can't be shorter than 30 minutes! Recreating the JSON file with default values.");
+                RecreateJsonWithDefaultValues();
+
+                wait_time_hours = 2;
+                wait_time_minutes = 0;
+                wait_time_seconds = 0;
+                UpdateComboBoxValuesToJsonValues();
+            }
+            */
             else
             {
                 HoursComboBox.SelectedValue = wait_time_hours;
@@ -145,6 +172,18 @@ namespace blood_clot_warner
                     SecondsComboBox.SelectedValue = wait_time_seconds;
                     return;
                 }
+                /* TODO - enable this check on release
+                else if (hours_passed == 0 && minutes_passed < 30)
+                {
+                    MessageBox.Show("The wait time can't be shorter 30 minutes!");
+
+                    // Return combobox values to previously existing values
+                    HoursComboBox.SelectedValue = wait_time_hours;
+                    MinutesComboBox.SelectedValue = wait_time_minutes;
+                    SecondsComboBox.SelectedValue = wait_time_seconds;
+                    return;
+                }
+                */
 
                 wait_time_hours = hours_passed;
                 wait_time_minutes = minutes_passed;
@@ -174,15 +213,21 @@ namespace blood_clot_warner
 
         private void StartTimer(TimeSpan alert_time)
         {
-            timer = new Timer(lambda =>
-            {
-                ShowGetUpNotification(); // Call this function at the end of the passed time span.
-            }, null, alert_time, Timeout.InfiniteTimeSpan);
+            if (timer.Enabled)
+                timer.Stop();
+
+            timer.Interval = alert_time.TotalMilliseconds; // Re-set timer interval in case it was edited by pressing the "save" button.
+            timer.Start();
         }
 
-        private void ShowGetUpNotification()
+        private void ShowGetUpNotification(object sender, ElapsedEventArgs args)
         {
-            MessageBox.Show("Time's up! Get up and do some stretching before returning to your chair.");
+            ToastContentBuilder toast_notification = new ToastContentBuilder();
+            toast_notification.AddText("Blood clot warning!");
+            toast_notification.AddText("Time's up! Get up and do some stretching before returning to your chair.");
+            toast_notification.Show();
+
+            StartTimer(GetTimeSpanForTimer()); // Restart the timer.
         } 
     }
 }
