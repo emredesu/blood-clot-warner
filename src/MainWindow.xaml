@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:blood_clot_warner"
         mc:Ignorable="d"
         Title="Blood Clot Warner" Height="350" Width="800">
@@ -38,5 +39,18 @@
         <Button Grid.Row="1" Grid.Column="1" Content="Save" FontSize="15" Click="OnSaveButtonClicked" Width="150" Height="50" VerticalAlignment="Top" Background="LightGreen"></Button>
         <Button Grid.Row="1" Grid.Column="0" Content="How to use?" FontSize="15" Click="OnHelpButtonClicked" Width="150" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20"></Button>
         <Button Grid.Row="1" Grid.Column="2" Content="Github" FontSize="15" Click="OnGithubButtonClicked" Width="150" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20"></Button>
+
+        <tb:TaskbarIcon IconSource="icon.ico" ToolTipText="Blood clot warner running! Click here to open up the settings."
+                        Visibility="Collapsed" Name="TaskbarIcon" MenuActivation="All">
+
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open menu" Command="OnOpenMenuSelected"></MenuItem>
+                    <MenuItem Header="Exit" Command="OnExitSelected"></MenuItem>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+
+        
     </Grid>
 </Window>
