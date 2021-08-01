@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text.Json;
 using System.Timers;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -41,6 +41,9 @@ namespace blood_clot_warner
         public MainWindow()
         {
             InitializeComponent();
+
+            // Windows API stuff to cancel the current window minimization event and use our code instead.
+            this.SourceInitialized += new EventHandler(OnSourceInitialized);
 
             // add minutes 1-60 to minutes ComboBox 
             for(int i = 0; i < 60; i++)
@@ -81,6 +84,28 @@ namespace blood_clot_warner
             }
 
             StartTimer(GetTimeSpanForTimer());
+        }
+
+        private void OnSourceInitialized(object sender, EventArgs args)
+        {
+            HwndSource source = (HwndSource)PresentationSource.FromVisual(this);
+            source.AddHook(new HwndSourceHook(HandleMessages));
+        }
+
+        private IntPtr HandleMessages(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            // 0x0112 == WM_SYSCOMMAND, 'Window' command message.
+            // 0xF020 == SC_MINIMIZE, command to minimize the window.
+            if (msg == 0x0112 && ((int)wParam & 0xFFF0) == 0xF020)
+            {
+                // Cancel the default minimize.
+                handled = true;
+
+                // Run our own code instead.
+                OnMinimized();
+            }
+
+            return IntPtr.Zero;
         }
 
         void RecreateJsonWithDefaultValues()
@@ -154,7 +179,24 @@ namespace blood_clot_warner
             return timespan_until_then;
         }
 
-        public void OnSaveButtonClicked(object sender, RoutedEventArgs args)
+        private void OnMinimized()
+        {
+            TaskbarIcon.Visibility = Visibility.Visible;
+            this.Hide();
+        }
+
+        private void OnOpenMenuSelected()
+        {
+            TaskbarIcon.Visibility = Visibility.Collapsed;
+            this.Show();
+        }
+
+        private void OnExitSelected()
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void OnSaveButtonClicked(object sender, RoutedEventArgs args)
         {
             try
             {
