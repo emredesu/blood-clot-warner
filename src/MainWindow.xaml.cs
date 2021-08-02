@@ -185,13 +185,13 @@ namespace blood_clot_warner
             this.Hide();
         }
 
-        private void OnOpenMenuSelected()
+        private void OnOpenMenuSelected(object sender, RoutedEventArgs args)
         {
             TaskbarIcon.Visibility = Visibility.Collapsed;
             this.Show();
         }
 
-        private void OnExitSelected()
+        private void OnExitSelected(object sender, RoutedEventArgs args)
         {
             Application.Current.Shutdown();
         }
@@ -272,4 +272,6 @@ namespace blood_clot_warner
             StartTimer(GetTimeSpanForTimer()); // Restart the timer.
         } 
     }
+
+    
 }
