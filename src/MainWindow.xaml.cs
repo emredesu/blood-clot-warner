@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Media;
 using System.Timers;
 using System.Threading;
 using System.Windows;
@@ -140,6 +141,7 @@ namespace blood_clot_warner
         {
             if (wait_time_hours == 4 && (wait_time_minutes != 0 || wait_time_seconds != 0))
             {
+                SystemSounds.Exclamation.Play();
                 MessageBox.Show("Wait time can't be longer than 4 hours! Recreating the JSON file with default values.");
                 RecreateJsonWithDefaultValues();
 
@@ -148,9 +150,9 @@ namespace blood_clot_warner
                 wait_time_seconds = 0;
                 UpdateComboBoxValuesToJsonValues();
             }
-            /* TODO - enable this check on release
             else if (wait_time_hours == 0 && wait_time_minutes < 30)
             {
+                SystemSounds.Exclamation.Play();
                 MessageBox.Show("Wait time can't be shorter than 30 minutes! Recreating the JSON file with default values.");
                 RecreateJsonWithDefaultValues();
 
@@ -159,7 +161,6 @@ namespace blood_clot_warner
                 wait_time_seconds = 0;
                 UpdateComboBoxValuesToJsonValues();
             }
-            */
             else
             {
                 HoursComboBox.SelectedValue = wait_time_hours;
@@ -206,6 +207,7 @@ namespace blood_clot_warner
 
                 if (hours_passed == 4 && (minutes_passed != 0 || seconds_passed != 0))
                 {
+                    SystemSounds.Exclamation.Play();
                     MessageBox.Show("The wait time can't be longer than 4 hours!");
 
                     // Return combobox values to previously existing values
@@ -214,9 +216,9 @@ namespace blood_clot_warner
                     SecondsComboBox.SelectedValue = wait_time_seconds;
                     return;
                 }
-                /* TODO - enable this check on release
                 else if (hours_passed == 0 && minutes_passed < 30)
                 {
+                    SystemSounds.Exclamation.Play();
                     MessageBox.Show("The wait time can't be shorter 30 minutes!");
 
                     // Return combobox values to previously existing values
@@ -225,7 +227,6 @@ namespace blood_clot_warner
                     SecondsComboBox.SelectedValue = wait_time_seconds;
                     return;
                 }
-                */
 
                 wait_time_hours = hours_passed;
                 wait_time_minutes = minutes_passed;
@@ -233,10 +234,12 @@ namespace blood_clot_warner
 
                 RecreateJsonWithExistingValues();
                 StartTimer(GetTimeSpanForTimer());
+                SystemSounds.Asterisk.Play();
                 MessageBox.Show($"Done! You will be alerted at {target_time.ToLongTimeString()}");
             }
             catch (Exception e)
             {
+                SystemSounds.Exclamation.Play();
                 MessageBox.Show("Something went horribly wrong.");
             }
         }
@@ -244,13 +247,16 @@ namespace blood_clot_warner
         // todo: change the text on this button with a question mark image
         public void OnHelpButtonClicked(object sender, RoutedEventArgs args)
         {
-            MessageBox.Show("todo :D");
+            string information_text = "Set up the timer interval to be warned with above. When the timer is over, " +
+                                      "you will be warned to get up with a notification."; 
+            MessageBox.Show(information_text);
         }
 
         // todo: change the text on this button with a github logo image
         public void OnGithubButtonClicked(object sender, RoutedEventArgs args)
         {
-            MessageBox.Show("todo :D");
+            string url = "https://github.com/emredesu/blood-clot-warner";
+            System.Diagnostics.Process.Start("explorer", url);
         }
 
         private void StartTimer(TimeSpan alert_time)
@@ -271,7 +277,5 @@ namespace blood_clot_warner
 
             StartTimer(GetTimeSpanForTimer()); // Restart the timer.
         } 
-    }
-
-    
+    }  
 }
