@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:blood_clot_warner"
         mc:Ignorable="d"
         Title="Blood Clot Warner" Height="350" Width="800">
-    <Grid>
+
+    <Grid Background="#232937">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -19,9 +20,9 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Alert me after not getting up after this long:" Width="350" FontSize="18" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#e4f0fb" Text="Alert me for not getting up after this long:" Width="350" FontSize="18" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
 
-        <TextBlock Grid.Row="0" Text="Hours:" FontSize="15" HorizontalAlignment="Center" Margin="30"/>
+        <TextBlock Grid.Row="0" Text="Hours:" FontSize="15" HorizontalAlignment="Center" Margin="30" Foreground="#e4f0fb"/>
         <ComboBox x:Name="HoursComboBox" SelectedValuePath="Content" Grid.Row="0" Grid.Column="0" Width="200" Height="30" Margin="0, 25, 0, 0">
             <ComboBoxItem Content="0"></ComboBoxItem>
             <ComboBoxItem Content="1"></ComboBoxItem>
@@ -30,15 +31,23 @@
             <ComboBoxItem Content="4"></ComboBoxItem>
         </ComboBox>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="Minutes:" FontSize="15" HorizontalAlignment="Center" Margin="30"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="Minutes:" FontSize="15" HorizontalAlignment="Center" Margin="30" Foreground="#e4f0fb"/>
         <ComboBox x:Name="MinutesComboBox" SelectedValuePath="Content" Grid.Row="0" Grid.Column="1" Width="200" Height="30" Margin="0, 25, 0, 0"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="Seconds:" FontSize="15" HorizontalAlignment="Center" Margin="30"></TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="Seconds:" FontSize="15" HorizontalAlignment="Center" Margin="30" Foreground="#e4f0fb"></TextBlock>
         <ComboBox x:Name="SecondsComboBox" SelectedValuePath="Content" Grid.Row="0" Grid.Column="2" Width="200" Height="30" Margin="0, 25, 0, 0"/>
 
-        <Button Grid.Row="1" Grid.Column="1" Content="Save" FontSize="15" Click="OnSaveButtonClicked" Width="150" Height="50" VerticalAlignment="Top" Background="LightGreen"></Button>
-        <Button Grid.Row="1" Grid.Column="0" Content="How to use?" FontSize="15" Click="OnHelpButtonClicked" Width="150" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20"></Button>
-        <Button Grid.Row="1" Grid.Column="2" Content="Github" FontSize="15" Click="OnGithubButtonClicked" Width="150" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20"></Button>
+        <Button Grid.Row="1" Grid.Column="1" Content="Save" FontSize="15" Click="OnSaveButtonClicked" Width="150" Height="50" VerticalAlignment="Top" Background="#28e8a7"></Button>
+        <Button Grid.Row="1" Grid.Column="0" FontSize="15" Click="OnHelpButtonClicked" Width="50" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20">
+            <Button.Background>
+                <ImageBrush ImageSource="question.png" Stretch="None"></ImageBrush>
+            </Button.Background>
+        </Button>
+        <Button Grid.Row="1" Grid.Column="2" FontSize="15" Click="OnGithubButtonClicked" Width="50" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20">
+            <Button.Background>
+                <ImageBrush ImageSource="github_logo.png" Stretch="None"></ImageBrush>
+            </Button.Background>
+        </Button>
 
         <tb:TaskbarIcon IconSource="icon.ico" ToolTipText="Blood clot warner running! Click here to open up the settings or to exit."
                         Visibility="Collapsed" Name="TaskbarIcon" MenuActivation="All">
