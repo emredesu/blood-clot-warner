@@ -1,5 +1,5 @@
 # blood-clot-warner
-An app that will warns the user when they don't get up for too long.
+An app that will warn the user when they don't get up for too long.
 
 ## Roadmap:
 
