@@ -197,6 +197,12 @@ namespace blood_clot_warner
             Application.Current.Shutdown();
         }
 
+        private void OnRestartTimerSelected(object sender, RoutedEventArgs args)
+        {
+            timer.Stop();
+            timer.Start();
+        }
+
         private void OnSaveButtonClicked(object sender, RoutedEventArgs args)
         {
             try
