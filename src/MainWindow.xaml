@@ -55,6 +55,7 @@
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Open menu" Click="OnOpenMenuSelected"></MenuItem>
+                    <MenuItem Header="Restart timer" Click="OnRestartTimerSelected"></MenuItem>
                     <MenuItem Header="Exit" Click="OnExitSelected"></MenuItem>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
